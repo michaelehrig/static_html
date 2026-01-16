@@ -1,3 +1,5 @@
+import sys
+
 from textnode import TextNode, TextType
 from htmlnode import generate_pages_recursive, prepare_directory
 
@@ -5,8 +7,13 @@ from htmlnode import generate_pages_recursive, prepare_directory
 
 
 def main():
-    prepare_directory('./static','./public')
-    generate_pages_recursive('./content', 'template.html', './public')
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    else:
+        basepath = '/'
+    
+    prepare_directory('./static','./docs')
+    generate_pages_recursive('./content', 'template.html', './docs', basepath)
 
             
 if __name__ == "__main__":

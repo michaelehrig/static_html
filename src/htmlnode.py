@@ -292,7 +292,7 @@ def extract_title(html):
     else: 
         return titles[0]
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     try:
         with open(from_path, 'r', encoding='utf-8') as f:
@@ -311,6 +311,8 @@ def generate_page(from_path, template_path, dest_path):
         print(f"An error occurred: {e}")
     
     html = markdown_to_html_node(markdown).to_html()
+    html = html.replace('href="/', f'href="{basepath}')
+    html = html.replace('src="/', f'src="{basepath}')
     title = extract_title(html)
     template = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
 
@@ -322,7 +324,7 @@ def generate_page(from_path, template_path, dest_path):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def generate_pages_recursive(dir_path_content, template_path, dest_path_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_path_path, basepath):
     try:
         # Check if the source directory exists
         if not os.path.exists(dir_path_content):
@@ -341,9 +343,9 @@ def generate_pages_recursive(dir_path_content, template_path, dest_path_path):
                 base, extension = os.path.splitext(content)
                 destination = base + '.html'
                 content_destination = os.path.join(dest_path_path, destination)
-                generate_page(content_source, template_path, content_destination)
+                generate_page(content_source, template_path, content_destination, basepath)
             else:
                 content_destination = os.path.join(dest_path_path, content)
-                generate_pages_recursive(content_source, template_path, content_destination) 
+                generate_pages_recursive(content_source, template_path, content_destination, basepath) 
     except OSError as e:
         print(f"Operating system error: {e}")
